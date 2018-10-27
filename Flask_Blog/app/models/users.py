@@ -16,7 +16,16 @@ class Permission:
     COMMENT = 0x02
     WRITE_POST = 0x03
     MODERATE_COMMENTS = 0x08
-    ADMINISTRATOR = 0x80 
+    ADMINISTRATOR = 0x80
+
+class Society:
+
+    __tablename__ = 'socities'
+
+    id = db.Column(db.Integer, primary_key = True)
+    society_name = db.Column(db.String(50), unique = True, nullable = False)
+    secret_key = db.Column(db.String(50), unique = True, nullable = False)
+    users = db.relationship('User', backref = 'society', lazy = 'dynamic')
 
 class Role(db.Model, UserMixin ):
 
