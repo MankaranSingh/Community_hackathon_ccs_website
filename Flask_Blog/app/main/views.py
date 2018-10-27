@@ -1,12 +1,13 @@
 from flask import render_template, session, redirect, url_for, flash, redirect, current_app
 from . import main
-from .forms import Login, SignUp, SignUp_society
+from .forms import Login, SignUp, SignUp_society, Admin_form
 from .. import db, login_manager
 from ..models.users import User, Role, Society
 from werkzeug import check_password_hash, generate_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug import generate_password_hash
 from flask_mail import Message
+import secrets
 
 
 @main.route('/Home')
@@ -14,13 +15,28 @@ from flask_mail import Message
 def home():
     return render_template('HomePage.html')
 
+@main.route('/Admin', methods = ['GET', 'POST'])
+@login_required
+def Admin_Page():
+    form = Admin_form()
+    secret = secrets.token_hex(4)
+    if current_user.email == 'mankaran32@gmail.com':
+        if form.validate_on_submit():
+            society = Society(society_name = form.Society_name.data, secret_key= form.society_secret_key.data)
+            db.session.add(society)
+            db.session.commit()
+            flash('Society Registered')
+    else:
+        return redirect(url_for('main.home'))
+    return render_template('Admin.html', form = form, secret = secret)
+        
 @main.route('/Sign_up_Society_head', methods = ['GET', 'POST'] )
 def SignUp_Head():
     form = SignUp_society()
     if form.validate_on_submit():
-        society_user = Society.query.filter_by(society = form.society_name.data).first()
-        if society_user is not None:
-            head = User.query.filter_by(society_head = True)
+        society = Society.query.filter_by(society = form.society_name.data).first()
+        if society is not None:
+            head = User.query.filter_by(soociety = form.society_name.data, society_head = True)
             if head is None:
                 flag = False
             else:
@@ -37,14 +53,8 @@ def SignUp_Head():
                 return redirect(url_for('main.login'))
     return render_template('Register_Head.html', form = form)
                 
-            
-        if form.secret_key.data = Secret_keys.query.filter_by(
-        hashed_password = generate_password_hash(form.password.data)
-        user = User(username = form.username.data, email = form.email.data, password= hashed_password, )
-        
-
 @main.route('/Login', methods=['GET', 'POST'])
-def login_student():
+def login():
     form = Login()
     if form.validate_on_submit():
         user = User.query.filter_by(email = form.email.data).first()

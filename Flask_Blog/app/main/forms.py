@@ -4,7 +4,20 @@ from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, E
 from .. import db
 from ..models.users import User, Role, Society
 
-EqualTo('confirm', message='Passwords must match')
+class Admin_form(FlaskForm):
+
+    Society_name = StringField('Society Name: ' , validators= [Length(3,50), DataRequired()])
+    society_secret_key = StringField('Secret Key: ' , validators= [Length(1,120), DataRequired()])
+    submit = SubmitField('Register')
+    def validate_Society_name(self, society_name):
+        society = Society.query.filter_by(society_name = society_name.data).first()
+        if society:
+            raise ValidationError('Username Already Taken')
+    def validate_society_secret_key(self, society_secret_key):
+        secret_key = Society.query.filter_by(secret_key = society_secret_key.data).first()
+        if secret_key:
+            raise ValidationError('Secret Key Already In Use')
+        
 
 class SignUp(FlaskForm):
 
@@ -55,10 +68,10 @@ class SignUp_society(FlaskForm):
         if email:
             raise ValidationError('Email Already in Use')
 
-    def validate_society_name(self, username):
+    def validate_society_name(self, society_name):
 
-        society_user = Society.query.filter_by(society_name = society_name.data).first()
-        if society_user:
+        society = Society.query.filter_by(society_name = society_name.data).first()
+        if society:
             raise ValidationError('Username Already Taken')
         elif Secret_key.data != society_user.secret_key:
             raise ValidationError('Invalid Secret Key')

@@ -30,11 +30,10 @@
             <ul class = "nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}
                 <li> <a href="/logout"> Logout </a> </li>
+                <li> <a href="/Sign_up_Society_head"> Register a Society </a> </li>
                 {% else %}
                 <li> <a href="/Login"> Login </a> </li>
-                <li> <a href="/Login"> Staff Login </a> </li>
-                <li> <a href="/Sign_up_Society_head"> Sign Up </a> </li>
-                <li> <a href="/SignUp"> Register a Society </a> </li>
+                <li> <a href="/SignUp"> Sign Up </a> </li>
                 {% endif %}
                 
         </div>
@@ -60,7 +59,7 @@
     	<h1> Welcome to our Flask Blog </h1>
         {% if current_user.is_authenticated %}
         <h2> Hello, {{ current_user.username }} </h2>
-        <h2> You have a {{current_user.role.role_name}} Role </h2>
+        <h2> You are a member of {{current_user.society.society_name}} </h2>
         {% endif %}
     </div>
 </div>

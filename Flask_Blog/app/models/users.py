@@ -18,9 +18,9 @@ class Permission:
     MODERATE_COMMENTS = 0x08
     ADMINISTRATOR = 0x80
 
-class Society:
+class Society(db.Model, UserMixin):
 
-    __tablename__ = 'socities'
+    __tablename__ = 'societies'
 
     id = db.Column(db.Integer, primary_key = True)
     society_name = db.Column(db.String(50), unique = True, nullable = False)
@@ -66,7 +66,7 @@ class User(db.Model, UserMixin):
     confirmed = db.Column(db.Boolean, default = False)
     society_head = db.Column(db.Boolean, default = False)
     society_name = db.Column(db.String(50), default = None)
-
+    society_id = db.Column(db.Integer , db.ForeignKey('societies.id'))
     def generate_confirmation_token(self, expiration = 3600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'confirm':self.id})

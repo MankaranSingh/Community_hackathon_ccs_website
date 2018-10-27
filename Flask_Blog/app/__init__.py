@@ -28,6 +28,7 @@ def create_app(config_name):         #Application Factory
     db.init_app(app)
     from .models.users import User, Role
     with app.app_context():
+        #db.drop_all()
         db.create_all()
     login_manager.init_app(app)
     mail.init_app(app)
