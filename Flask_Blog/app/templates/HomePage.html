@@ -59,7 +59,7 @@
     	<h1> Welcome to our Flask Blog </h1>
         {% if current_user.is_authenticated %}
         <h2> Hello, {{ current_user.username }} </h2>
-        <h2> You are a member of {{current_user.society.society_name}} </h2>
+        <h2> You are a member of {{ current_user.society_name }} </h2>
         {% endif %}
     </div>
 </div>

@@ -67,6 +67,7 @@ class User(db.Model, UserMixin):
     society_head = db.Column(db.Boolean, default = False)
     society_name = db.Column(db.String(50), default = None)
     society_id = db.Column(db.Integer , db.ForeignKey('societies.id'))
+    
     def generate_confirmation_token(self, expiration = 3600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'confirm':self.id})

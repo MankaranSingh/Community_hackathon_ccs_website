@@ -31,26 +31,33 @@ def Admin_Page():
     return render_template('Admin.html', form = form, secret = secret)
         
 @main.route('/Sign_up_Society_head', methods = ['GET', 'POST'] )
+@login_required
 def SignUp_Head():
     form = SignUp_society()
     if form.validate_on_submit():
-        society = Society.query.filter_by(society = form.society_name.data).first()
+        society = Society.query.filter_by(society_name = form.society_name.data).first()
         if society is not None:
-            head = User.query.filter_by(soociety = form.society_name.data, society_head = True)
+            '''
+            head = User.query.filter_by(society = form.society_name.data, society_head = True)
             if head is None:
                 flag = False
             else:
                 flag = True
-            hashed_password = generate_password_hash(form.password.data)
-            user = User(username = form.username.data, email = form.email.data, password= hashed_password, Society_name = form.society_name.data, society_head = flag)
-            if form.secret_key.data == society_user.secret_key:
-                db.session.add(user)
-                db.session.commit()
-                flash('Your  Society Account has been successfuly registered, A confirmation E-mail been sent to your emai address. ')
-                #token = user.generate_confirmation_token()
-                #User.send_mail(user.email, 'Confirm Account' , 'confirmation_email'
-                #             , user = user, token = token)
-                return redirect(url_for('main.login'))
+                '''
+            user = User.query.filter_by(email = current_user.email)
+            if user:
+                if form.Secret_key.data == society.secret_key:
+                    current_user.society_name = form.society_name.data
+                    current_user.society_head = True
+                    db.session.commit()
+                    flash('Successfully linked account with society.')
+                    
+                    return redirect(url_for('main.home'))
+                else:
+                    flash('Invalid Secret Key')
+                
+            else:
+                flash('Invalid Cradentials or Secret Key')
     return render_template('Register_Head.html', form = form)
                 
 @main.route('/Login', methods=['GET', 'POST'])

@@ -3,6 +3,7 @@ from wtforms import StringField, SubmitField, BooleanField , PasswordField, Subm
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, Email
 from .. import db
 from ..models.users import User, Role, Society
+from flask_login import current_user
 
 class Admin_form(FlaskForm):
 
@@ -48,33 +49,24 @@ class Login(FlaskForm):
 
 class SignUp_society(FlaskForm):
 
-    username = StringField('Username: ' , validators= [Length(3,50), DataRequired()])
+    society_name = StringField('Society Name:', validators = [DataRequired(), Length(1,100)])
     email = StringField('Email: ', validators= [Email()])
     Secret_key = StringField('Secret Key:', validators = [DataRequired()])
-    society_name = StringField('Society Name:', validators = [DataRequired(), Length(1,100)])
-    password = PasswordField('Password: ' ,validators= [Length(3,50), DataRequired()])
-    confirm_password = PasswordField('Confirm Password: ' ,validators= [Length(3,50), DataRequired(), EqualTo('password', message='Passwords must match')])
-    Submit = SubmitField('Sign Up !')
+    Submit = SubmitField('Register')
     
-    def validate_username(self, username):
-
-        user = User.query.filter_by(username = username.data).first()
-        if user:
-            raise ValidationError('Username Already Taken')
-        
+    
     def validate_email(self, email):
 
-        email = User.query.filter_by(email = email.data).first()
-        if email:
-            raise ValidationError('Email Already in Use')
+        email = User.query.filter_by(email = current_user.email).first()
+        if not email:
+            raise ValidationError('Invalid Cradentials')
 
     def validate_society_name(self, society_name):
 
         society = Society.query.filter_by(society_name = society_name.data).first()
-        if society:
-            raise ValidationError('Username Already Taken')
-        elif Secret_key.data != society_user.secret_key:
-            raise ValidationError('Invalid Secret Key')
+        if not society:
+            raise ValidationError('Society does not exists. Contact Administrator.')
+        
 
             
        
