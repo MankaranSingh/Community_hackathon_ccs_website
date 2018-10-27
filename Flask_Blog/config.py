@@ -12,7 +12,7 @@ class  Config:
     MAIL_USE_TLS = False
     MAIL_USE_SSL = True
     MAIL_USERNAME = 'radiant32'
-    MAIL_PASSWORD = '9417534378'
+    MAIL_PASSWORD = ''
     ADMINS = ['mankaran3232@gmail.com']
     DEBUG = True
 
