@@ -1,8 +1,8 @@
 from flask import render_template, session, redirect, url_for, flash, redirect, current_app
 from . import main
-from .forms import Login, SignUp, SignUp_society, Admin_form
+from .forms import Login, SignUp, SignUp_society, Admin_form, Account_form,Post_form
 from .. import db, login_manager
-from ..models.users import User, Role, Society
+from ..models.users import User, Role, Society, Post
 from werkzeug import check_password_hash, generate_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug import generate_password_hash
@@ -10,10 +10,44 @@ from flask_mail import Message
 import secrets
 
 
-@main.route('/Home')
-
+@main.route('/Home',methods = ['GET', 'POST'])
 def home():
-    return render_template('HomePage.html')
+    return render_template('HomePage.html',post = Post.query.all())
+
+@main.route('/Post', methods = ['GET', 'POST'])
+@login_required
+def post():
+    form = Post_form()
+    if form.validate_on_submit():
+        if current_user.society_name!=form.society_name.data:
+            flash('Account Not Linked With Society')
+        else:
+            post = Post(society_name = form.society_name.data, post_title= form.post_title.data, post_body = form.post_body.data, post_author = current_user.username)
+            db.session.add(post)
+            db.session.commit()
+            flash('Post Successfully Created')
+    return render_template('Post.html', form = form)
+            
+
+
+@main.route('/Account', methods = ['GET', 'POST'])
+@login_required
+def account():
+    form = Account_form()
+    form.username.data = str(current_user.username)
+    form.email.data = str(current_user.email)
+    form.year.data = current_user.year
+    form.phone_number.data = current_user.phone_number
+    form.roll_number.data = current_user.roll_number
+    if form.validate_on_submit():
+        current_user.username=form.username.data
+        current_user.email = form.email.data
+        current_user.year = form.year.data
+        current_user.phone_number = form.phone_number.data
+        current_user.roll_number = form.roll_number.data
+        db.session.commit()
+        flash('Account Info Updated.')
+    return render_template('Account.html', form = form)
 
 @main.route('/Admin', methods = ['GET', 'POST'])
 @login_required
@@ -68,7 +102,7 @@ def login():
         if user and check_password_hash(user.password, form.password.data):
             login_user(user,form.remember.data)
             flash('Logged In')
-            redirect(url_for('main.home'))
+            return redirect(url_for('main.home'))
         else:
             flash('Login Failed, Incorrect Username or Password Entered')
     return render_template('Login.html', form = form)
@@ -78,8 +112,8 @@ def sign_up():
     form = SignUp()
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data)
-        user = User(username = form.username.data, email = form.email.data, password= hashed_password)
-        Role.insert_roles()
+        user = User(username = form.username.data, email = form.email.data, password= hashed_password, phone_number = form.phone_number.data, year = form.year.data, roll_number = form.roll_number.data)
+        #Role.insert_roles()
         #user.role = Role.query.filter_by(role_name = 'User').first()
         db.session.add(user)
         db.session.commit()

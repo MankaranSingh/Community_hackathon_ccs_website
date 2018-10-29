@@ -13,8 +13,13 @@
  {% endfor %}
 
 <div class="page-header" style="margin-left: 150px; margin-right: 150px;">
-	<h2 style="margin-bottom: 30px;"> Sign Up </h2>
+	<div class="container mt-5 ml-auto">
+	<div class="form-group">
+		<div class="row"><div class="col-sm">
+	<h2 style="margin-bottom: 30px;"> Sign-Up </h2>
 	{{ wtf.quick_form(form) }}
+	</div><div class="col-sm"></div>
+</div></div></div>
 	
 </div>
 {% endblock %}

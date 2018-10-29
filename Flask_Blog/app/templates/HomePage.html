@@ -1,13 +1,17 @@
 {% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}Flask Blog{% endblock %}
 
+
+
 {% block scripts %}
 {{ super() }}
+
 {% endblock %}
 
 {% block navbar %}
-<div class="navbar navbar-inverse" role="navigation">
+<!--<div class="navbar navbar-inverse" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -39,7 +43,59 @@
         </div>
 
     </div>
-</div>
+</div>-->
+<nav class="navbar navbar-expand-lg navbar-white bg-dark">
+  <a class="navbar-brand" href="/Home">Community</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+{% if current_user.is_authenticated %}
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/Home">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">All Societies</a>
+        
+      </li>
+      <li>
+      <a class="nav-link" href="/Post">Post Event</a>
+    </li>
+  </ul>
+  <ul class="navbar-nav mr-5">
+    
+     <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Settings
+        </a>
+        <div class="dropdown-menu text-right" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item " href="/Account">Edit Account</a>
+          {% if current_user.email == 'mankaran32@gmail.com' %}
+          <a class="dropdown-item " href="/Admin">Admin</a>
+          {% endif %}
+          <a class="dropdown-item " href="#">Subscriptions</a>
+          <a class="dropdown-item " href="/Sign_up_Society_head">Link Society</a>
+          <a class="dropdown-item " href="/logout">Logout</a>
+        </div>
+      </li>
+    </ul>
+    {% else %}
+    <ul class="navbar-nav mr-0">
+      <li class="nav-item active">
+        <a class="nav-link" href="/Login">Login<span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/SignUp" >Signup</a>
+      </li>
+    </ul>
+  </div>
+
+
+  {% endif %}</nav>
+
+
 {% endblock %}
 
 
@@ -48,19 +104,36 @@
  {% block content %}
 
 {% for message in get_flashed_messages() %}
- <div style="margin-left: 150px; margin-right: 150px;" class="alert alert-warning">
+
+<br><br><br>
+ <div style="margin-left: 150px; margin-right: 150px; margin-top: 10px;" class="alert alert-warning">
  <button type="button" class="close" data-dismiss="alert">&times;</button>
  {{ message }}
  </div>
  {% endfor %}
 
 <div class="container">
-    <div class="page-header">
-    	<h1> Welcome to our Flask Blog </h1>
+    <br><br><br>
+    	<h1> Welcome to our Community Website</h1>
         {% if current_user.is_authenticated %}
-        <h2> Hello, {{ current_user.username }} </h2>
-        <h2> You are a member of {{ current_user.society_name }} </h2>
+        <h3> Hello, {{ current_user.username }}</h3>
         {% endif %}
+
+      {% for posts in post %}
+      <div  style="margin-bottom: 10px; margin-top: 30px">
+        <div>
+      <h1> {{ posts.society_name }} </h1>
+      </div>
+      <div >
+      <h2> {{ posts.post_title }} </h2>
+      </div>
+      <p>
+      <h3> {{ posts.post_body }} </h3>
+      </p>
     </div>
-</div>
+    <h3>_________________________________________________</h3>
+      {% endfor %}
+
+    </div>
+
 {% endblock %}

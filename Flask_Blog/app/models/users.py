@@ -52,8 +52,9 @@ class Role(db.Model, UserMixin ):
             db.session.add(role)
         db.session.commit()
 '''               
-                
 
+
+   
 class User(db.Model, UserMixin):
 
     __tablename__ = 'users'
@@ -62,11 +63,15 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key = True, nullable = False)
     role_id = db.Column(db.Integer , db.ForeignKey('roles.id'))
     email = db.Column(db.String(120), unique= True, nullable = False)
+    phone_number = db.Column(db.Integer, nullable = False)
+    year = db.Column(db.Integer, nullable = False)
+    roll_number = db.Column(db.Integer, nullable = False)
     password = db.Column(db.String(120), nullable = False)
     confirmed = db.Column(db.Boolean, default = False)
     society_head = db.Column(db.Boolean, default = False)
     society_name = db.Column(db.String(50), default = None)
     society_id = db.Column(db.Integer , db.ForeignKey('societies.id'))
+    post_id = db.Column(db.Integer , db.ForeignKey('posts.id'))
     
     def generate_confirmation_token(self, expiration = 3600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
@@ -98,6 +103,18 @@ class User(db.Model, UserMixin):
         if self.role.permissions == Permission.ADMINISTRATOR:
             return True
         return False
+
+
+class Post(db.Model, UserMixin):
+
+    __tablename__ = 'posts'
+    
+    id = db.Column(db.Integer, primary_key = True, nullable = False)
+    society_name = db.Column(db.String(50), nullable = False)
+    post_title = db.Column(db.String(50), nullable = False)
+    post_body = db.Column(db.Text, nullable = False)
+    post_author = db.Column(db.String(50), nullable = False)
+    users = db.relationship('User', backref = 'post', lazy = 'dynamic')
 
 
 @login_manager.user_loader
